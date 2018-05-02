@@ -1,0 +1,161 @@
+Decoder V-5.0.33 Build 14019, Jan 20 2014
+Options: -ArgFileSources/main_c.args -Env"GENPATH=C:/Users/Nicolas Zamora/Documents/workspace/MotorReloj/Project_Headers;C:\Freescale\CW MCU v10.7\eclipse\../MCU/lib/hc08c/device/src;C:\Freescale\CW MCU v10.7\eclipse\../MCU/lib/hc08c/lib;C:\Freescale\CW MCU v10.7\eclipse\../MCU/lib/hc08c/src;C:\Freescale\CW MCU v10.7\eclipse\../MCU/lib/hc08c/device/include;C:\Freescale\CW MCU v10.7\eclipse\../MCU/lib/hc08c/include;C:\Freescale\CW MCU v10.7\eclipse\../MCU/lib/hc08c/device/asm_include" -EnvOBJPATH=. -EnvTEXTPATH=. -OSources\main_c.lst -ViewHidden -WmsgFob"%f%e:%l:%k:%d %m\n"
+Decoding File: 'Sources\main_c.obj'
+File format: ELF/DWARF
+
+DISASSEMBLY OF: '.text' FROM 964 TO 1173 SIZE 209 (0XD1)
+Opening source file 'C:/Users/Nicolas Zamora/Documents/workspace/MotorReloj\Sources\main.c'
+   24: int rotarServo(int degrees)
+rotarServo:
+00000000 A7FE     AIS    #-2
+   26: 	if(degrees >= 0 && degrees <= 180)
+00000002 6500B4   CPHX   #0x00B4
+00000005 221D     BHI    *+31       ;abs = 0x0024
+   28: 		return (degrees*26)+200;	// Daza
+00000007 9EFF01   STHX   1,SP
+0000000A AE1A     LDX    #0x1A
+0000000C 8C       CLRH   
+0000000D 89       PSHX   
+0000000E 8B       PSHH   
+0000000F 9EFE03   LDHX   3,SP
+00000012 CD0000   JSR    IMUL_STAR08
+00000015 A702     AIS    #2
+00000017 9F       TXA    
+00000018 ABC8     ADD    #0xC8
+0000001A 87       PSHA   
+0000001B 8B       PSHH   
+0000001C 86       PULA   
+0000001D A900     ADC    #0x00
+0000001F 87       PSHA   
+00000020 8A       PULH   
+00000021 88       PULX   
+00000022 2003     BRA    *+5       ;abs = 0x0027
+   32: 		return 700;
+00000024 4502BC   LDHX   #0x02BC
+   34: }
+00000027 A702     AIS    #2
+00000029 81       RTS    
+   36: void main(void) 
+main:
+0000002A 4F       CLRA   
+0000002B C70000   STA    SOPT1
+   40: 	MCGTRM = 0xAA; // Configura freciencia a 8 MHz
+0000002E 6EAA00   MOV    #0xAA,MCGTRM
+   41: 	MCGC1 = 6;
+00000031 6E0600   MOV    #0x06,MCGC1
+   42: 	while(MCGSC_LOCK == 0){}; // Espera que se enganche
+00000034 0D00FD   BRCLR  6,MCGSC,MCGSC
+   44: 	IRQSC=0b00010110; //Habilita interupcion externa 
+00000037 6E1600   MOV    #0x16,IRQSC
+   45: 	PTEDD=0xFF;//Configura salidas Para LEDs en puerto E
+0000003A 6EFF00   MOV    #0xFF,PTEDD
+   46: 	PTGPE=0x0F;// Habilita resistencias de Pull-up para entradas
+0000003D A60F     LDA    #0x0F
+0000003F C70000   STA    PTGPE
+   47: 	KBISC_KBACK=1;//Configuracion KBI
+00000042 1400     BSET   2,KBISC
+   48: 	KBISC_KBIE=1;//Habilita KBI
+00000044 1200     BSET   1,KBISC
+   49: 	TPM1SC = 0b01110100; //TIM1 Pre*16, Int. habilitada, TIM deshabilitado
+00000046 6E7400   MOV    #0x74,TPM1SC
+   50: 	TPM1MOD=62500;            //T=1sg
+00000049 45F424   LDHX   #0xF424
+0000004C 3500     STHX   TPM1MOD
+   51: 	TPM1SC_CLKSA = 1;//Habilita Timer
+0000004E 1600     BSET   3,TPM1SC
+   52: 	EnableInterrupts;//CLI
+00000050 9A       CLI    
+   56: 		LED0=0;//Ejemplo para poner bit unicos en 1 o 0
+00000051 1100     BCLR   0,PTED
+   57: 		LED1=1;
+00000053 1200     BSET   1,PTED
+00000055 20FA     BRA    *-4       ;abs = 0x0051
+   61: interrupt 2 void IRQ_ISR(void){
+IRQ_ISR:
+00000057 80       RTI    
+   66: interrupt 26 void KBI_ISR(void){
+KBI_ISR:
+00000058 80       RTI    
+   71: interrupt 15 void TIM1_ISR(void){
+TIM1_ISR:
+00000059 8B       PSHH   
+   72: 	TPM1SC_TOF=0;//Borra bandera
+0000005A 1F00     BCLR   7,TPM1SC
+   73:   segundos++;
+0000005C 450000   LDHX   #segundos
+0000005F 6C01     INC    1,X
+00000061 2601     BNE    *+3       ;abs = 0x0064
+00000063 7C       INC    ,X
+   74:   if (segundos>59){
+00000064 320000   LDHX   segundos
+00000067 65003B   CPHX   #0x003B
+0000006A 2363     BLS    *+101       ;abs = 0x00CF
+   75:     segundos=0;
+0000006C 5F       CLRX   
+0000006D 8C       CLRH   
+0000006E 960000   STHX   segundos
+   76:     uMin++;
+00000071 450000   LDHX   #uMin
+00000074 6C01     INC    1,X
+00000076 2601     BNE    *+3       ;abs = 0x0079
+00000078 7C       INC    ,X
+   77:     if (uMin>9){
+00000079 320000   LDHX   uMin
+0000007C 650009   CPHX   #0x0009
+0000007F 234E     BLS    *+80       ;abs = 0x00CF
+   78:       uMin=0;
+00000081 5F       CLRX   
+00000082 8C       CLRH   
+00000083 960000   STHX   uMin
+   79:       dMin++;
+00000086 450000   LDHX   #dMin
+00000089 6C01     INC    1,X
+0000008B 2601     BNE    *+3       ;abs = 0x008E
+0000008D 7C       INC    ,X
+   80:       if (dMin>5){
+0000008E 320000   LDHX   dMin
+00000091 650005   CPHX   #0x0005
+00000094 2339     BLS    *+59       ;abs = 0x00CF
+   81:         dMin=0;
+00000096 5F       CLRX   
+00000097 8C       CLRH   
+00000098 960000   STHX   dMin
+   82:         uHora++;
+0000009B 450000   LDHX   #uHora
+0000009E 6C01     INC    1,X
+000000A0 2601     BNE    *+3       ;abs = 0x00A3
+000000A2 7C       INC    ,X
+   83:         if (uHora>9){
+000000A3 320000   LDHX   uHora
+000000A6 650009   CPHX   #0x0009
+000000A9 230F     BLS    *+17       ;abs = 0x00BA
+   84:           uHora=0;
+000000AB 5F       CLRX   
+000000AC 8C       CLRH   
+000000AD 960000   STHX   uHora
+   85:           dHora++;
+000000B0 450000   LDHX   #dHora
+000000B3 6C01     INC    1,X
+000000B5 2618     BNE    *+26       ;abs = 0x00CF
+000000B7 7C       INC    ,X
+   97: }
+000000B8 8A       PULH   
+   86:         }else{
+000000B9 80       RTI    
+   87:           if (uHora==4){
+000000BA 650004   CPHX   #0x0004
+000000BD 2610     BNE    *+18       ;abs = 0x00CF
+   88:             if (dHora==2){
+000000BF 320000   LDHX   dHora
+000000C2 650002   CPHX   #0x0002
+000000C5 2608     BNE    *+10       ;abs = 0x00CF
+   89:               uHora=0;
+000000C7 5F       CLRX   
+000000C8 8C       CLRH   
+000000C9 960000   STHX   uHora
+   90:               dHora=0;
+000000CC 960000   STHX   dHora
+   97: }
+000000CF 8A       PULH   
+000000D0 80       RTI    
+
