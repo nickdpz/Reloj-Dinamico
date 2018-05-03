@@ -3,14 +3,7 @@
 
 /*define led's*/
 #define LRESET	PTCD_PTCD2
-#define LED0	PTED_PTED0
-#define LED1	PTED_PTED1
-#define LED2	PTED_PTED2
-#define LED3	PTED_PTED3
-#define LED4	PTED_PTED4
-#define LED5	PTED_PTED5
-#define LED6	PTED_PTED6
-#define LED7	PTED_PTED7
+#define LESTADO	PTCD_PTCD5
 
 #define DisableWatchdog() CONFIG1_COPD = 1
 
@@ -19,7 +12,7 @@ const unsigned char tabla[]={"PERIODO:"};
 volatile unsigned int Uperiodo=0;
 volatile unsigned int Dperiodo=0;
 volatile unsigned int Cperiodo=0;
-volatile unsigned int Aux1=0,Aux=0;
+volatile unsigned int Aux1=0,Aux=0,De=0;
 
 //----------RUTINAS LCD-----------------------
 //--------------------------------------------
@@ -52,7 +45,22 @@ void dato(){
 	return;
 }
 //------------------------------------------------------------------
-
+void act_lcd(){
+	Cperiodo=Aux/100;
+	Aux1=Aux-Cperiodo*100;
+	Dperiodo=Aux1/10;
+	Uperiodo=Aux1%10;
+	cursor(0b10001101);
+	PTED=Cperiodo+0x30;
+	dato();
+	cursor(0b10001110);
+	PTED=Dperiodo+0x30;
+	dato();
+	cursor(0b10001111);
+	PTED=Uperiodo+0x30;
+	dato(); 
+	return;
+}
 void main(void) {
 	//---------------Configuración del microcontrolador-------------
 	//--------------------------------------------------------------
@@ -62,11 +70,13 @@ void main(void) {
 	while(MCGSC_LOCK == 0){}; // Espera que se enganche
 	//----------------------------------------------
 	//---------Configuracion IRQ--------------------
-	PTCDD=0b00000100;
+	PTCDD=0b00100100;
 	//PTFPE=0b00010000;//Habilita resistencias de Pull-Up
 	LRESET=1;
+	LESTADO=1;
 	tiempo(5000);
 	LRESET=0;
+	LESTADO=0;
 	IRQSC=0b00010110; //Se hablilita por flanco de bajada, Se habilita interrupcion,habilita interrupcion
 	//-------------------------------------------------
 	//-------Configuracion LCD---------------
@@ -95,65 +105,59 @@ void main(void) {
 			}	
 	//---------------------------------------------
 	//---------Configuracion Timer 1 PWM-----------
-	TPM1SC = 0b00000111; //TIM1 Pre*64, Int. deshabilitada, TIM deshabilitado
+	TPM1SC = 0b00000101; //TIM1 Pre*32, Int. deshabilitada, TIM deshabilitado
 	TPM1MOD=0xFFFF;      //T=0.52428s
 	TPM1C2SC=0b00101000; //Configuracion de canal-Modo Edge alined PWM-Deshabilita interupcion CPWMS = 0
-	TPM1C2V=0x00FF; 		 //Configuracion de comparador de canal
+	TPM1C2V=0x5FFF; 		 //Configuracion de comparador de canal
 	//---------------------------------------------
 	//---------Configuracion Timer 2 Contador------
-	TPM2SC = 0b00000111; 	//TIM2 Pre*64, Int. deshabilitada, TIM deshabilitado
-	TPM2C0SC =0b00000100;	//Configurado Modo Captura
-	TPM2MOD=0xFFFF;         //T=1sg
+	TPM2SC = 0b00000101; 	//TIM2 Pre*32, Int. deshabilitada, TIM deshabilitado
+	//TPM2C0SC =0b00000100;	//Configurado Modo Captura
+	TPM2MOD=0xFFFF;         //T=0.5sg
 	//--------------------------------------------
 	TPM2SC_CLKSA = 1;	 //Habilita Timer 2
 	TPM1SC_CLKSA = 1;	 //Habilita Timer 1
 	EnableInterrupts;//CLI
 	//Fin poner a andar timers
 	for(;;) 
-	{/*
-		while(TPM2C0SC_CH0F==0){}
-		TPM2C0SC_CH0F=0;
-		TPM2CNTH=0; //REINICIO CONTADOR
-		while(TPM2C0SC_CH0F==0){}
-		TPM2C0SC_CH0F=0;
-		Aux=TPM2C0V/125;
-		Periodo(Aux);
-	*/	
+	{
+		
 	}
 }
-
-//interrupt 18 void TPM2_ISR(void){
-//	TPM2SC_TOF=0;}
-
-//interrupt 15 void TPM1_ISR(void){}
-
+/*
+interrupt 18 void TPM2_ISR(void){	
+	TPM2SC_TOF=0;
+}
+*/
+/*
+interrupt 15 void TPM1_ISR(void){
+	TPM1SC_TOF=0;
+}
+*/
 interrupt 2 void IRQ_ISR(void){
-	Aux=TPM2CNT/125;
-	if(Aux<35){
-		if(Aux>25){
-		//No haga nada	
-		}else{
-			Aux1=TPM1C2V-10; 		 //Configuracion de comparador de canal
-			TPM1C2V=Aux1;
-		}
+	if(De==0){
+		TPM2CNT=0x0000;
+		De=1;
 	}else{
-		Aux1=TPM1C2V+10;
-		TPM1C2V=Aux1;
+		Aux=TPM2CNT/250;
+			if(Aux<70){
+				if(Aux>60){
+				//No haga nada
+				LESTADO=1;	
+				}else{
+					Aux1=TPM1C2V-1000; 		 //Configuracion de comparador de canal
+					TPM1C2V=Aux1;
+				LESTADO=0;
+				}
+			}else{
+				if(TPM1C2V<0xBFFF){
+				Aux1=TPM1C2V+1000;
+				TPM1C2V=Aux1;
+				LESTADO=0;}
+			}
+			act_lcd();
+			De=0;
 	}
-	Cperiodo=Aux/100;
-	Aux1=Aux-Cperiodo*100;
-	Dperiodo=Aux1/10;
-	Uperiodo=Aux1%10;
-	cursor(0b10001101);
-	PTED=Cperiodo+0x30;
-	dato();
-	cursor(0b10001110);
-	PTED=Dperiodo+0x30;
-	dato();
-	cursor(0b10001111);
-	PTED=Uperiodo+0x30;
-	dato();	
-	TPM2CNT=0x0000;
 	IRQSC_IRQACK=1;
 }
 
@@ -166,5 +170,4 @@ dato();
 cursor(0b10001110);
 PTED=Aux/10+0x30;
 dato();	
-
 */

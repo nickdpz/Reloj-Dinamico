@@ -24,8 +24,8 @@ Entry point: 0xC07B (_Startup)
 _startupData is allocated at 0xC084 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
-  _Range   pZeroOut       0x100     14
-  _Copy    *toCopyDownBeg 0xC2CD
+  _Range   pZeroOut       0x100     16
+  _Copy    *toCopyDownBeg 0xC305
 } _startupData;
 
 *********************************************************************************************
@@ -35,8 +35,8 @@ Section Name                    Size  Type     From       To       Segment
 .init                            132     R     0xC000     0xC083   ROM
 .startData                        18     R     0xC084     0xC095   ROM
 .rodata                            9     R     0xC096     0xC09E   ROM
-.text                            558     R     0xC09F     0xC2CC   ROM
-.copy                              2     R     0xC2CD     0xC2CE   ROM
+.text                            614     R     0xC09F     0xC304   ROM
+.copy                              2     R     0xC305     0xC306   ROM
 .abs_section_fffa                  2     R     0xFFFA     0xFFFB   .absSeg0
 .abs_section_0                     1   N/I        0x0        0x0   .absSeg1
 .abs_section_1                     1   N/I        0x1        0x1   .absSeg2
@@ -182,14 +182,14 @@ Section Name                    Size  Type     From       To       Segment
 .abs_section_1810                  2   N/I     0x1810     0x1811   .absSeg142
 .abs_section_1812                  2   N/I     0x1812     0x1813   .absSeg143
 .abs_section_1814                  2   N/I     0x1814     0x1815   .absSeg144
-.bss                              10   R/W      0x100      0x109   RAM
-.common                            4   R/W      0x10A      0x10D   RAM
-.stack                           128   R/W      0x10E      0x18D   RAM
+.bss                              12   R/W      0x100      0x10B   RAM
+.common                            4   R/W      0x10C      0x10F   RAM
+.stack                           128   R/W      0x110      0x18F   RAM
 .vectSeg145_vect                   2     R     0xFFFE     0xFFFF   .vectSeg145
 
 Summary of section sizes per section type:
-READ_ONLY (R):         2D3 (dec:      723)
-READ_WRITE (R/W):       8E (dec:      142)
+READ_ONLY (R):         30B (dec:      779)
+READ_WRITE (R/W):       90 (dec:      144)
 NO_INIT (N/I):          A6 (dec:      166)
 
 *********************************************************************************************
@@ -209,8 +209,9 @@ MODULE:                 -- main_c.obj --
      comando                                   C0D9       4       4       5   .text       
      cursor                                    C0DD       4       4       4   .text       
      dato                                      C0E1       4       4       2   .text       
-     main                                      C0E5      8A     138       1   .text       
-     IRQ_ISR                                   C16F      B1     177       1   .text       
+     act_lcd                                   C0E5      77     119       1   .text       
+     main                                      C15C      95     149       1   .text       
+     IRQ_ISR                                   C1F1      67     103       1   .text       
 - VARIABLES:
      tabla                                     C096       9       9       1   .rodata     
      Uperiodo                                   100       2       2       2   .bss        
@@ -218,9 +219,10 @@ MODULE:                 -- main_c.obj --
      Cperiodo                                   104       2       2       3   .bss        
      Aux1                                       106       2       2       5   .bss        
      Aux                                        108       2       2       4   .bss        
+     De                                         10A       2       2       2   .bss        
      _Vector_2                                 FFFA       2       2       0   .abs_section_fffa
-     i                                          10A       2       2       6   .common     
-     j                                          10C       2       2       4   .common     
+     i                                          10C       2       2       6   .common     
+     j                                          10E       2       2       4   .common     
 MODULE:                 -- start08_c.obj --
 - PROCEDURES:
      loadByte                                  C000       E      14       5   .init       
@@ -229,7 +231,7 @@ MODULE:                 -- start08_c.obj --
 - VARIABLES:
      _startupData                              C084       6       6       4   .startData  
 - LABELS:
-     __SEG_END_SSTACK                           18E       0       0       1               
+     __SEG_END_SSTACK                           190       0       0       1               
 MODULE:                 -- mc9s08jm16_c.obj --
 - PROCEDURES:
 - VARIABLES:
@@ -237,7 +239,7 @@ MODULE:                 -- mc9s08jm16_c.obj --
      _PTADD                                       1       1       1       0   .abs_section_1
      _PTBD                                        2       1       1       0   .abs_section_2
      _PTBDD                                       3       1       1       0   .abs_section_3
-     _PTCD                                        4       1       1       2   .abs_section_4
+     _PTCD                                        4       1       1       6   .abs_section_4
      _PTCDD                                       5       1       1       1   .abs_section_5
      _PTDD                                        6       1       1       5   .abs_section_6
      _PTDDD                                       7       1       1       1   .abs_section_7
@@ -290,7 +292,7 @@ MODULE:                 -- mc9s08jm16_c.obj --
      _IICD                                       5C       1       1       0   .abs_section_5c
      _IICC2                                      5D       1       1       0   .abs_section_5d
      _TPM2SC                                     60       1       1       2   .abs_section_60
-     _TPM2C0SC                                   65       1       1       1   .abs_section_65
+     _TPM2C0SC                                   65       1       1       0   .abs_section_65
      _TPM2C1SC                                   68       1       1       0   .abs_section_68
      _RTCSC                                      6C       1       1       0   .abs_section_6c
      _RTCCNT                                     6D       1       1       0   .abs_section_6d
@@ -361,7 +363,7 @@ MODULE:                 -- mc9s08jm16_c.obj --
      _TPM1MOD                                    23       2       2       1   .abs_section_23
      _TPM1C0V                                    26       2       2       0   .abs_section_26
      _TPM1C1V                                    29       2       2       0   .abs_section_29
-     _TPM1C2V                                    2C       2       2       4   .abs_section_2c
+     _TPM1C2V                                    2C       2       2       5   .abs_section_2c
      _TPM1C3V                                    2F       2       2       0   .abs_section_2f
      _SCI1BD                                     38       2       2       0   .abs_section_38
      _SCI2BD                                     40       2       2       0   .abs_section_40
@@ -379,17 +381,17 @@ MODULE:                 -- mc9s08jm16_c.obj --
      _DBGF                                     1814       2       2       0   .abs_section_1814
 MODULE:                 -- rtshc08.o (ansiis.lib) --
 - PROCEDURES:
-     _IDIVMOD                                  C220      69     105       2   .text       
-     _IMUL_STAR08                              C289      27      39       1   .text       
-     _IDIVU_STAR08                             C2B0       D      13       3   .text       
-     _IMODU_STAR08                             C2BD      10      16       1   .text       
+     _IDIVMOD                                  C258      69     105       2   .text       
+     _IMUL_STAR08                              C2C1      27      39       1   .text       
+     _IDIVU_STAR08                             C2E8       D      13       3   .text       
+     _IMODU_STAR08                             C2F5      10      16       1   .text       
 - VARIABLES:
 
 *********************************************************************************************
 MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
-  main_c.obj                                  14    385     11
+  main_c.obj                                  16    441     11
   start08_c.obj                                0    132      0
   mc9s08jm16_c.obj                           166      0      0
   rtshc08.o (ansiis.lib)                       0    173      0
@@ -399,10 +401,10 @@ MODULE STATISTIC
 SECTION USE IN OBJECT-ALLOCATION SECTION
 ---------------------------------------------------------------------------------------------
 SECTION: ".text"
-  tiempo salto comando cursor dato main IRQ_ISR _IDIVMOD _IMUL_STAR08 
+  tiempo salto comando cursor dato act_lcd main IRQ_ISR _IDIVMOD _IMUL_STAR08 
   _IDIVU_STAR08 _IMODU_STAR08 
 SECTION: ".bss"
-  Uperiodo Dperiodo Cperiodo Aux1 Aux 
+  Uperiodo Dperiodo Cperiodo Aux1 Aux De 
 SECTION: ".init"
   loadByte Init _Startup 
 SECTION: ".rodata"
@@ -708,7 +710,7 @@ OBJECT LIST SORTED BY ADDRESS
      _PTADD                                       1       1       1       0   .abs_section_1
      _PTBD                                        2       1       1       0   .abs_section_2
      _PTBDD                                       3       1       1       0   .abs_section_3
-     _PTCD                                        4       1       1       2   .abs_section_4
+     _PTCD                                        4       1       1       6   .abs_section_4
      _PTCDD                                       5       1       1       1   .abs_section_5
      _PTDD                                        6       1       1       5   .abs_section_6
      _PTDDD                                       7       1       1       1   .abs_section_7
@@ -738,7 +740,7 @@ OBJECT LIST SORTED BY ADDRESS
      _TPM1C1SC                                   28       1       1       0   .abs_section_28
      _TPM1C1V                                    29       2       2       0   .abs_section_29
      _TPM1C2SC                                   2B       1       1       1   .abs_section_2b
-     _TPM1C2V                                    2C       2       2       4   .abs_section_2c
+     _TPM1C2V                                    2C       2       2       5   .abs_section_2c
      _TPM1C3SC                                   2E       1       1       0   .abs_section_2e
      _TPM1C3V                                    2F       2       2       0   .abs_section_2f
      _SCI1BD                                     38       2       2       0   .abs_section_38
@@ -775,7 +777,7 @@ OBJECT LIST SORTED BY ADDRESS
      _TPM2SC                                     60       1       1       2   .abs_section_60
      _TPM2CNT                                    61       2       2       2   .abs_section_61
      _TPM2MOD                                    63       2       2       1   .abs_section_63
-     _TPM2C0SC                                   65       1       1       1   .abs_section_65
+     _TPM2C0SC                                   65       1       1       0   .abs_section_65
      _TPM2C0V                                    66       2       2       0   .abs_section_66
      _TPM2C1SC                                   68       1       1       0   .abs_section_68
      _TPM2C1V                                    69       2       2       0   .abs_section_69
@@ -813,8 +815,9 @@ OBJECT LIST SORTED BY ADDRESS
      Cperiodo                                   104       2       2       3   .bss        
      Aux1                                       106       2       2       5   .bss        
      Aux                                        108       2       2       4   .bss        
-     i                                          10A       2       2       6   .common     
-     j                                          10C       2       2       4   .common     
+     De                                         10A       2       2       2   .bss        
+     i                                          10C       2       2       6   .common     
+     j                                          10E       2       2       4   .common     
      _SRS                                      1800       1       1       0   .abs_section_1800
      _SBDFR                                    1801       1       1       0   .abs_section_1801
      _SOPT1                                    1802       1       1       1   .abs_section_1802
@@ -864,12 +867,13 @@ OBJECT LIST SORTED BY ADDRESS
      comando                                   C0D9       4       4       5   .text       
      cursor                                    C0DD       4       4       4   .text       
      dato                                      C0E1       4       4       2   .text       
-     main                                      C0E5      8A     138       1   .text       
-     IRQ_ISR                                   C16F      B1     177       1   .text       
-     _IDIVMOD                                  C220      69     105       2   .text       
-     _IMUL_STAR08                              C289      27      39       1   .text       
-     _IDIVU_STAR08                             C2B0       D      13       3   .text       
-     _IMODU_STAR08                             C2BD      10      16       1   .text       
+     act_lcd                                   C0E5      77     119       1   .text       
+     main                                      C15C      95     149       1   .text       
+     IRQ_ISR                                   C1F1      67     103       1   .text       
+     _IDIVMOD                                  C258      69     105       2   .text       
+     _IMUL_STAR08                              C2C1      27      39       1   .text       
+     _IDIVU_STAR08                             C2E8       D      13       3   .text       
+     _IMODU_STAR08                             C2F5      10      16       1   .text       
      _Vector_2                                 FFFA       2       2       0   .abs_section_fffa
 
 *********************************************************************************************
@@ -902,7 +906,7 @@ rtshc08.o (ansiis.lib):
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xC2CD ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC305 ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -916,13 +920,14 @@ salto                     USES _PTDD i tiempo
 comando                   USES _PTDD salto 
 cursor                    USES _PTED comando 
 dato                      USES _PTDD salto 
+act_lcd                   USES Aux _IDIVU_STAR08 Cperiodo _IMUL_STAR08 Aux1 
+                                Dperiodo _IMODU_STAR08 Uperiodo cursor _PTED dato 
 main                      USES _SOPT1 _MCGTRM _MCGC1 _MCGSC _PTCDD _PTCD 
                                 tiempo _IRQSC _PTEDD _PTDDD _PTDD _PTED comando 
                                 cursor j tabla dato _TPM1SC _TPM1MOD _TPM1C2SC 
-                                _TPM1C2V _TPM2SC _TPM2C0SC _TPM2MOD 
-IRQ_ISR                   USES _TPM2CNT _IDIVU_STAR08 Aux _TPM1C2V Aux1 
-                                Cperiodo _IMUL_STAR08 Dperiodo _IMODU_STAR08 Uperiodo 
-                                cursor _IRQSC _PTED dato 
+                                _TPM1C2V _TPM2SC _TPM2MOD 
+IRQ_ISR                   USES De _TPM2CNT _IDIVU_STAR08 Aux _PTCD _TPM1C2V 
+                                Aux1 act_lcd _IRQSC 
 _IDIVU_STAR08             USES _IDIVMOD 
 _IMODU_STAR08             USES _IDIVMOD 
 _Vector_2                 USES IRQ_ISR 
@@ -966,16 +971,20 @@ DEPENDENCY TREE
     |  | 
     |  +- _IDIVMOD            
     |       
-    +- _IMUL_STAR08        
-    |    
-    +- _IMODU_STAR08       
-    |  | 
-    |  +- _IDIVMOD             (see above)
-    |     
-    +- cursor               (see above)
-    |  
-    +- dato                 (see above)
-       
+    +- act_lcd             
+       | 
+       +- _IDIVU_STAR08        (see above)
+       |  
+       +- _IMUL_STAR08        
+       |    
+       +- _IMODU_STAR08       
+       |  | 
+       |  +- _IDIVMOD             (see above)
+       |     
+       +- cursor               (see above)
+       |  
+       +- dato                 (see above)
+          
 *********************************************************************************************
 STATISTIC SECTION
 ---------------------------------------------------------------------------------------------
@@ -983,5 +992,5 @@ STATISTIC SECTION
 ExeFile:
 --------
 Number of blocks to be downloaded: 6
-Total size of all blocks to be downloaded: 723
+Total size of all blocks to be downloaded: 779
 
