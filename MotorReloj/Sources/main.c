@@ -66,11 +66,11 @@ void main(void) {
 	//--------------------------------------------------------------
 	SOPT1 = 0;//Deshabilita W D
 	MCGTRM = 0xAA; // Configura freciencia a 8 MHz
-	MCGC1 = 6;
+	MCGC1 = 6;//Bus interno
 	while(MCGSC_LOCK == 0){}; // Espera que se enganche
 	//----------------------------------------------
 	//---------Configuracion IRQ--------------------
-	PTCDD=0b00100100;
+	PTCDD=0b00100100;//Habilita las salidas
 	//PTFPE=0b00010000;//Habilita resistencias de Pull-Up
 	LRESET=1;
 	LESTADO=1;
@@ -108,7 +108,7 @@ void main(void) {
 	TPM1SC = 0b00000101; //TIM1 Pre*32, Int. deshabilitada, TIM deshabilitado
 	TPM1MOD=0xFFFF;      //T=0.52428s
 	TPM1C2SC=0b00101000; //Configuracion de canal-Modo Edge alined PWM-Deshabilita interupcion CPWMS = 0
-	TPM1C2V=0x5FFF; 		 //Configuracion de comparador de canal
+	TPM1C2V=0x5FFF; 		 //Configuracion de comparador de canal Duty Cycle
 	//---------------------------------------------
 	//---------Configuracion Timer 2 Contador------
 	TPM2SC = 0b00000101; 	//TIM2 Pre*32, Int. deshabilitada, TIM deshabilitado
@@ -147,7 +147,7 @@ interrupt 2 void IRQ_ISR(void){
 				}else{
 					Aux1=TPM1C2V-1000; 		 //Configuracion de comparador de canal
 					TPM1C2V=Aux1;
-				LESTADO=0;
+					LESTADO=0;
 				}
 			}else{
 				if(TPM1C2V<0xBFFF){
