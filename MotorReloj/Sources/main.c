@@ -8,6 +8,8 @@
 #define DisableWatchdog() CONFIG1_COPD = 1
 
 unsigned int i,j;
+volatile unsigned char Valto=70,Temp=0;
+volatile unsigned char Vbajo=60;
 const unsigned char tabla[]={"PERIODO:"};
 volatile unsigned int Uperiodo=0;
 volatile unsigned int Dperiodo=0;
@@ -79,6 +81,13 @@ void main(void) {
 	LESTADO=0;
 	IRQSC=0b00010110; //Se hablilita por flanco de bajada, Se habilita interrupcion,habilita interrupcion
 	//-------------------------------------------------
+	//---------------Configuracion KBI-----------------------------
+		PTGDD=0;
+		PTGPE=0b00001100;//			 	;HABILITAR RESISTENCIAS DE PULL UP G2-G3
+		KBIPE=0b11000000;//HABILITAR INTERRUPCIONES DE PUERTOS 	KBI 6 , 7
+		KBISC_KBACK=1;
+		KBISC_KBIE=1;
+		KBIES=0x0;
 	//-------Configuracion LCD---------------
 	//--------------------------------------------------------
 	PTEDD=0xFF;//Configura salidas Para LCD
@@ -134,14 +143,31 @@ interrupt 15 void TPM1_ISR(void){
 	TPM1SC_TOF=0;
 }
 */
+interrupt VectorNumber_Vkeyboard void KBI_ISR(void){
+	Temp=(0b00001100)&PTGD;
+	if(Temp==0b0000100){
+		//Aumentar
+		if(Valto<100){
+			Valto=Valto+5;
+			Valto=Vbajo+5;
+		}
+	}
+	if(0b00001100){
+		if(Valto>40){
+					Valto=Valto-5;
+					Valto=Vbajo-5;
+				}
+	}
+	KBISC_KBACK=1;		
+}
 interrupt 2 void IRQ_ISR(void){
 	if(De==0){
 		TPM2CNT=0x0000;
 		De=1;
 	}else{
 		Aux=TPM2CNT/250;
-			if(Aux<70){
-				if(Aux>60){
+			if(Aux<Valto){
+				if(Aux>Vbajo){
 				//No haga nada
 				LESTADO=1;	
 				}else{
@@ -160,6 +186,7 @@ interrupt 2 void IRQ_ISR(void){
 	}
 	IRQSC_IRQACK=1;
 }
+
 
 /*
  Codigo de rescate
