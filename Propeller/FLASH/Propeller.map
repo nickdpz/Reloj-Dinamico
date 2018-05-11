@@ -23,20 +23,20 @@ Entry point: 0xC07B (_Startup)
 _startupData is allocated at 0xC084 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
-  _Range   pZeroOut       0x100     16
-  _Copy    *toCopyDownBeg 0xC3E5
+  _Range   pZeroOut       0x100     14
+  _Copy    *toCopyDownBeg 0xC381
 } _startupData;
 
 *********************************************************************************************
 SECTION-ALLOCATION SECTION
 Section Name                    Size  Type     From       To       Segment
 ---------------------------------------------------------------------------------------------
-.data                              4   R/W      0x100      0x103   RAM
+.data                              5   R/W      0x100      0x104   RAM
 .init                            132     R     0xC000     0xC083   ROM
 .startData                        18     R     0xC084     0xC095   ROM
-.rodata                           88     R     0xC096     0xC0ED   ROM
-.text                            759     R     0xC0EE     0xC3E4   ROM
-.copy                             10     R     0xC3E5     0xC3EE   ROM
+.rodata                           96     R     0xC096     0xC0F5   ROM
+.text                            651     R     0xC0F6     0xC380   ROM
+.copy                             11     R     0xC381     0xC38B   ROM
 .abs_section_ffcc                  2     R     0xFFCC     0xFFCD   .absSeg0
 .abs_section_ffe0                  2     R     0xFFE0     0xFFE1   .absSeg1
 .abs_section_ffda                  2     R     0xFFDA     0xFFDB   .absSeg2
@@ -184,14 +184,14 @@ Section Name                    Size  Type     From       To       Segment
 .abs_section_1810                  2   N/I     0x1810     0x1811   .absSeg144
 .abs_section_1812                  2   N/I     0x1812     0x1813   .absSeg145
 .abs_section_1814                  2   N/I     0x1814     0x1815   .absSeg146
-.bss                               6   R/W      0x104      0x109   RAM
-.common                            6   R/W      0x10A      0x10F   RAM
-.stack                           128   R/W      0x110      0x18F   RAM
+.bss                               3   R/W      0x105      0x107   RAM
+.common                            6   R/W      0x108      0x10D   RAM
+.stack                           128   R/W      0x10E      0x18D   RAM
 .vectSeg147_vect                   2     R     0xFFFE     0xFFFF   .vectSeg147
 
 Summary of section sizes per section type:
-READ_ONLY (R):         3F7 (dec:     1015)
-READ_WRITE (R/W):       90 (dec:      144)
+READ_ONLY (R):         394 (dec:      916)
+READ_WRITE (R/W):       8E (dec:      142)
 NO_INIT (N/I):          A6 (dec:      166)
 
 *********************************************************************************************
@@ -206,30 +206,29 @@ OBJECT-ALLOCATION SECTION
 ---------------------------------------------------------------------------------------------
 MODULE:                 -- main_c.obj --
 - PROCEDURES:
-     tiempo                                    C0EE      1C      28       2   .text       
-     main                                      C10A     1DE     478      34   .text       
-     KBI_ISR                                   C2E8      87     135       1   .text       
-     TPM1_ISR                                  C36F       5       5       1   .text       
-     TPM2_ISR                                  C374      71     113       1   .text       
+     tiempo                                    C0F6      1C      28       2   .text       
+     main                                      C112     1D6     470      35   .text       
+     KBI_ISR                                   C2E8      1D      29       1   .text       
+     TPM1_ISR                                  C305       5       5       1   .text       
+     TPM2_ISR                                  C30A      77     119       1   .text       
 - VARIABLES:
      N                                         C096      28      40       6   .rodata     
-     M1                                        C0BE      30      48       2   .rodata     
-     d_min                                      100       1       1       8   .data       
-     u_hora                                     101       1       1      11   .data       
-     d_hora                                     102       1       1       7   .data       
-     Enable                                     103       1       1       3   .data       
-     u_seg                                      104       1       1       4   .bss        
-     d_seg                                      105       1       1       3   .bss        
-     u_min                                      106       1       1       8   .bss        
-     Aux                                        107       1       1       2   .bss        
-     Bandera                                    108       1       1       5   .bss        
-     Mensaje                                    109       1       1       3   .bss        
+     M1                                        C0BE      1C      28       1   .rodata     
+     M2                                        C0DA      1C      28       1   .rodata     
+     d_min                                      100       1       1       4   .data       
+     u_hora                                     101       1       1       6   .data       
+     d_hora                                     102       1       1       4   .data       
+     Enable                                     103       1       1       4   .data       
+     Bandera                                    104       1       1       6   .data       
+     u_seg                                      105       1       1       5   .bss        
+     d_seg                                      106       1       1       4   .bss        
+     u_min                                      107       1       1       4   .bss        
      _Vector_25                                FFCC       2       2       0   .abs_section_ffcc
      _Vector_15                                FFE0       2       2       0   .abs_section_ffe0
      _Vector_18                                FFDA       2       2       0   .abs_section_ffda
-     i                                          10A       2       2       3   .common     
-     j                                          10C       2       2      12   .common     
-     k                                          10E       2       2       7   .common     
+     i                                          108       2       2       3   .common     
+     j                                          10A       2       2      12   .common     
+     k                                          10C       2       2       7   .common     
 MODULE:                 -- start08_c.obj --
 - PROCEDURES:
      loadByte                                  C000       E      14       5   .init       
@@ -238,7 +237,7 @@ MODULE:                 -- start08_c.obj --
 - VARIABLES:
      _startupData                              C084       6       6       4   .startData  
 - LABELS:
-     __SEG_END_SSTACK                           190       0       0       1               
+     __SEG_END_SSTACK                           18E       0       0       1               
 MODULE:                 -- mc9s08jm16_c.obj --
 - PROCEDURES:
 - VARIABLES:
@@ -254,8 +253,8 @@ MODULE:                 -- mc9s08jm16_c.obj --
      _PTEDD                                       9       1       1       1   .abs_section_9
      _PTFD                                        A       1       1       0   .abs_section_a
      _PTFDD                                       B       1       1       0   .abs_section_b
-     _PTGD                                        C       1       1       1   .abs_section_c
-     _PTGDD                                       D       1       1       1   .abs_section_d
+     _PTGD                                        C       1       1       0   .abs_section_c
+     _PTGDD                                       D       1       1       0   .abs_section_d
      _ACMPSC                                      E       1       1       0   .abs_section_e
      _ADCSC1                                     10       1       1       0   .abs_section_10
      _ADCSC2                                     11       1       1       0   .abs_section_11
@@ -361,7 +360,7 @@ MODULE:                 -- mc9s08jm16_c.obj --
      _PTFPE                                    1854       1       1       0   .abs_section_1854
      _PTFSE                                    1855       1       1       0   .abs_section_1855
      _PTFDS                                    1856       1       1       0   .abs_section_1856
-     _PTGPE                                    1858       1       1       1   .abs_section_1858
+     _PTGPE                                    1858       1       1       0   .abs_section_1858
      _PTGSE                                    1859       1       1       0   .abs_section_1859
      _PTGDS                                    185A       1       1       0   .abs_section_185a
      _ADCR                                       12       2       2       0   .abs_section_12
@@ -391,10 +390,10 @@ MODULE:                 -- mc9s08jm16_c.obj --
 MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
-  main_c.obj                                  16    759     94
+  main_c.obj                                  14    651    102
   start08_c.obj                                0    132      0
   mc9s08jm16_c.obj                           166      0      0
-  other                                      128     20     10
+  other                                      128     20     11
 
 *********************************************************************************************
 SECTION USE IN OBJECT-ALLOCATION SECTION
@@ -402,13 +401,13 @@ SECTION USE IN OBJECT-ALLOCATION SECTION
 SECTION: ".text"
   tiempo main KBI_ISR TPM1_ISR TPM2_ISR 
 SECTION: ".data"
-  d_min u_hora d_hora Enable 
+  d_min u_hora d_hora Enable Bandera 
 SECTION: ".bss"
-  u_seg d_seg u_min Aux Bandera Mensaje 
+  u_seg d_seg u_min 
 SECTION: ".init"
   loadByte Init _Startup 
 SECTION: ".rodata"
-  N M1 
+  N M1 M2 
 SECTION: ".abs_section_ffcc"
   _Vector_25 
 SECTION: ".abs_section_ffe0"
@@ -722,8 +721,8 @@ OBJECT LIST SORTED BY ADDRESS
      _PTEDD                                       9       1       1       1   .abs_section_9
      _PTFD                                        A       1       1       0   .abs_section_a
      _PTFDD                                       B       1       1       0   .abs_section_b
-     _PTGD                                        C       1       1       1   .abs_section_c
-     _PTGDD                                       D       1       1       1   .abs_section_d
+     _PTGD                                        C       1       1       0   .abs_section_c
+     _PTGDD                                       D       1       1       0   .abs_section_d
      _ACMPSC                                      E       1       1       0   .abs_section_e
      _ADCSC1                                     10       1       1       0   .abs_section_10
      _ADCSC2                                     11       1       1       0   .abs_section_11
@@ -814,19 +813,17 @@ OBJECT LIST SORTED BY ADDRESS
      _EPCTL4                                     A1       1       1       0   .abs_section_a1
      _EPCTL5                                     A2       1       1       0   .abs_section_a2
      _EPCTL6                                     A3       1       1       0   .abs_section_a3
-     d_min                                      100       1       1       8   .data       
-     u_hora                                     101       1       1      11   .data       
-     d_hora                                     102       1       1       7   .data       
-     Enable                                     103       1       1       3   .data       
-     u_seg                                      104       1       1       4   .bss        
-     d_seg                                      105       1       1       3   .bss        
-     u_min                                      106       1       1       8   .bss        
-     Aux                                        107       1       1       2   .bss        
-     Bandera                                    108       1       1       5   .bss        
-     Mensaje                                    109       1       1       3   .bss        
-     i                                          10A       2       2       3   .common     
-     j                                          10C       2       2      12   .common     
-     k                                          10E       2       2       7   .common     
+     d_min                                      100       1       1       4   .data       
+     u_hora                                     101       1       1       6   .data       
+     d_hora                                     102       1       1       4   .data       
+     Enable                                     103       1       1       4   .data       
+     Bandera                                    104       1       1       6   .data       
+     u_seg                                      105       1       1       5   .bss        
+     d_seg                                      106       1       1       4   .bss        
+     u_min                                      107       1       1       4   .bss        
+     i                                          108       2       2       3   .common     
+     j                                          10A       2       2      12   .common     
+     k                                          10C       2       2       7   .common     
      _SRS                                      1800       1       1       0   .abs_section_1800
      _SBDFR                                    1801       1       1       0   .abs_section_1801
      _SOPT1                                    1802       1       1       1   .abs_section_1802
@@ -864,19 +861,20 @@ OBJECT LIST SORTED BY ADDRESS
      _PTFPE                                    1854       1       1       0   .abs_section_1854
      _PTFSE                                    1855       1       1       0   .abs_section_1855
      _PTFDS                                    1856       1       1       0   .abs_section_1856
-     _PTGPE                                    1858       1       1       1   .abs_section_1858
+     _PTGPE                                    1858       1       1       0   .abs_section_1858
      _PTGSE                                    1859       1       1       0   .abs_section_1859
      _PTGDS                                    185A       1       1       0   .abs_section_185a
      loadByte                                  C000       E      14       5   .init       
      Init                                      C00E      6D     109       1   .init       
      _Startup                                  C07B       9       9       0   .init       
      N                                         C096      28      40       6   .rodata     
-     M1                                        C0BE      30      48       2   .rodata     
-     tiempo                                    C0EE      1C      28       2   .text       
-     main                                      C10A     1DE     478      34   .text       
-     KBI_ISR                                   C2E8      87     135       1   .text       
-     TPM1_ISR                                  C36F       5       5       1   .text       
-     TPM2_ISR                                  C374      71     113       1   .text       
+     M1                                        C0BE      1C      28       1   .rodata     
+     M2                                        C0DA      1C      28       1   .rodata     
+     tiempo                                    C0F6      1C      28       2   .text       
+     main                                      C112     1D6     470      35   .text       
+     KBI_ISR                                   C2E8      1D      29       1   .text       
+     TPM1_ISR                                  C305       5       5       1   .text       
+     TPM2_ISR                                  C30A      77     119       1   .text       
      _Vector_25                                FFCC       2       2       0   .abs_section_ffcc
      _Vector_18                                FFDA       2       2       0   .abs_section_ffda
      _Vector_15                                FFE0       2       2       0   .abs_section_ffe0
@@ -886,27 +884,30 @@ UNUSED-OBJECTS SECTION
 ---------------------------------------------------------------------------------------------
 NOT USED VARIABLES
 main_c.obj:
-  M2 
+  retardo Aux Mensaje 
 
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xC3E5 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xC381 ---- SIZE       4 ---
 Filling bytes inserted
- 00040100
-------- ROM-ADDRESS: 0xC3E9 ---- RAM-ADDRESS: 0x100 ---- SIZE       1 ---
+ 00050100
+------- ROM-ADDRESS: 0xC385 ---- RAM-ADDRESS: 0x100 ---- SIZE       1 ---
 Name of initialized Object : d_min
  02
-------- ROM-ADDRESS: 0xC3EA ---- RAM-ADDRESS: 0x101 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0xC386 ---- RAM-ADDRESS: 0x101 ---- SIZE       1 ---
 Name of initialized Object : u_hora
  02
-------- ROM-ADDRESS: 0xC3EB ---- RAM-ADDRESS: 0x102 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0xC387 ---- RAM-ADDRESS: 0x102 ---- SIZE       1 ---
 Name of initialized Object : d_hora
  01
-------- ROM-ADDRESS: 0xC3EC ---- RAM-ADDRESS: 0x103 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0xC388 ---- RAM-ADDRESS: 0x103 ---- SIZE       1 ---
 Name of initialized Object : Enable
  01
-------- ROM-ADDRESS: 0xC3ED ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC389 ---- RAM-ADDRESS: 0x104 ---- SIZE       1 ---
+Name of initialized Object : Bandera
+ 02
+------- ROM-ADDRESS: 0xC38A ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -917,11 +918,10 @@ Init                      USES _startupData loadByte
 _Startup                  USES __SEG_END_SSTACK Init main 
 tiempo                    USES i 
 main                      USES _SOPT1 _MCGTRM _MCGC1 _MCGSC _PTEDD _PTCDD 
-                                Bandera _PTCD tiempo _PTGDD _PTGPE _KBIPE _KBISC 
-                                _KBIES _TPM2SC _TPM2MOD _TPM1SC _TPM1MOD main d_hora 
-                                N _PTED u_hora d_min u_min j Mensaje k M1 
-KBI_ISR                   USES Enable _PTGD Aux Bandera Mensaje u_min d_min 
-                                u_hora d_hora _KBISC 
+                                _PTCD tiempo _KBIPE _KBISC _KBIES _TPM2SC _TPM2MOD 
+                                _TPM1SC _TPM1MOD main Bandera d_hora N _PTED u_hora 
+                                d_min u_min d_seg u_seg j k M1 M2 
+KBI_ISR                   USES Enable Bandera _KBISC 
 TPM1_ISR                  USES _TPM1SC 
 TPM2_ISR                  USES _TPM2SC Enable u_seg d_seg u_min d_min u_hora 
                                 d_hora 
@@ -965,5 +965,5 @@ STATISTIC SECTION
 ExeFile:
 --------
 Number of blocks to be downloaded: 7
-Total size of all blocks to be downloaded: 1015
+Total size of all blocks to be downloaded: 916
 

@@ -8,9 +8,10 @@
 #define DisableWatchdog() CONFIG1_COPD = 1
 
 unsigned int i,j;
-volatile unsigned char Valto=70,Temp=0;
-volatile unsigned char Vbajo=60;
+volatile unsigned char Valto=55,Temp=0;
+volatile unsigned char Vbajo=52;
 const unsigned char tabla[]={"PERIODO:"};
+const unsigned char tabla2[]={"FINAL:"};
 volatile unsigned int Uperiodo=0;
 volatile unsigned int Dperiodo=0;
 volatile unsigned int Cperiodo=0;
@@ -63,6 +64,22 @@ void act_lcd(){
 	dato(); 
 	return;
 }
+void act_lcd2(){
+	Cperiodo=Vbajo/100;
+	Aux1=Aux-Cperiodo*100;
+	Dperiodo=Vbajo/10;
+	Uperiodo=Vbajo%10;
+	cursor(0b11001101);
+	PTED=Cperiodo+0x30;
+	dato();
+	cursor(0b11001110);
+	PTED=Dperiodo+0x30;
+	dato();
+	cursor(0b11001111);
+	PTED=Uperiodo+0x30;
+	dato(); 
+	return;
+}
 void main(void) {
 	//---------------Configuración del microcontrolador-------------
 	//--------------------------------------------------------------
@@ -83,8 +100,8 @@ void main(void) {
 	//-------------------------------------------------
 	//---------------Configuracion KBI-----------------------------
 		PTGDD=0;
-		PTGPE=0b00001100;//			 	;HABILITAR RESISTENCIAS DE PULL UP G2-G3
-		KBIPE=0b11000000;//HABILITAR INTERRUPCIONES DE PUERTOS 	KBI 6 , 7
+		PTGPE=0b00001111;//HABILITAR RESISTENCIAS DE PULL UP G2-G3
+		KBIPE=0b00000011;//HABILITAR INTERRUPCIONES DE PUERTOS 	KBI 6 , 7
 		KBISC_KBACK=1;
 		KBISC_KBIE=1;
 		KBIES=0x0;
@@ -111,18 +128,24 @@ void main(void) {
 		for(j=0;j<sizeof(tabla)-1;j++){
 				PTED=tabla[j];
 				dato();
-			}	
+			}
+		cursor(0b11000000);
+		for(j=0;j<sizeof(tabla2)-1;j++){
+						PTED=tabla2[j];
+						dato();
+					}
+		
 	//---------------------------------------------
 	//---------Configuracion Timer 1 PWM-----------
-	TPM1SC = 0b00000101; //TIM1 Pre*32, Int. deshabilitada, TIM deshabilitado
+	TPM1SC = 0b00000100; //TIM1 Pre*32, Int. deshabilitada, TIM deshabilitado
 	TPM1MOD=0xFFFF;      //T=0.52428s
 	TPM1C2SC=0b00101000; //Configuracion de canal-Modo Edge alined PWM-Deshabilita interupcion CPWMS = 0
-	TPM1C2V=0x5FFF; 		 //Configuracion de comparador de canal Duty Cycle
+	TPM1C2V=0xDFFF; 		 //Configuracion de comparador de canal Duty Cycle
 	//---------------------------------------------
 	//---------Configuracion Timer 2 Contador------
 	TPM2SC = 0b00000101; 	//TIM2 Pre*32, Int. deshabilitada, TIM deshabilitado
 	//TPM2C0SC =0b00000100;	//Configurado Modo Captura
-	TPM2MOD=0xFFFF;         //T=0.5sg
+	TPM2MOD=0xFFAF;         //T=0.5sg
 	//--------------------------------------------
 	TPM2SC_CLKSA = 1;	 //Habilita Timer 2
 	TPM1SC_CLKSA = 1;	 //Habilita Timer 1
@@ -138,26 +161,23 @@ interrupt 18 void TPM2_ISR(void){
 	TPM2SC_TOF=0;
 }
 */
+
 /*
 interrupt 15 void TPM1_ISR(void){
 	TPM1SC_TOF=0;
 }
 */
 interrupt VectorNumber_Vkeyboard void KBI_ISR(void){
-	Temp=(0b00001100)&PTGD;
-	if(Temp==0b0000100){
-		//Aumentar
-		if(Valto<100){
-			Valto=Valto+5;
-			Valto=Vbajo+5;
-		}
+	Temp=0b00000011&PTGD;
+	if(Temp==0b0000001){
+			Valto=Valto+1;
+			Vbajo=Vbajo+1;
 	}
-	if(0b00001100){
-		if(Valto>40){
-					Valto=Valto-5;
-					Valto=Vbajo-5;
-				}
+	if(Temp==0b0000010){
+			Valto=Valto-1;
+			Vbajo=Vbajo-1;
 	}
+	act_lcd2();
 	KBISC_KBACK=1;		
 }
 interrupt 2 void IRQ_ISR(void){
@@ -165,21 +185,22 @@ interrupt 2 void IRQ_ISR(void){
 		TPM2CNT=0x0000;
 		De=1;
 	}else{
-		Aux=TPM2CNT/250;
+		Aux=TPM2CNT/500;
 			if(Aux<Valto){
 				if(Aux>Vbajo){
 				//No haga nada
 				LESTADO=1;	
 				}else{
-					Aux1=TPM1C2V-1000; 		 //Configuracion de comparador de canal
+					Aux1=TPM1C2V-500; 		 //Configuracion de comparador de canal
 					TPM1C2V=Aux1;
 					LESTADO=0;
 				}
 			}else{
-				if(TPM1C2V<0xBFFF){
-				Aux1=TPM1C2V+1000;
+				if(TPM1C2V<0xFDFF){
+				Aux1=TPM1C2V+500;
 				TPM1C2V=Aux1;
-				LESTADO=0;}
+				LESTADO=0;
+					}
 			}
 			act_lcd();
 			De=0;
@@ -198,3 +219,4 @@ cursor(0b10001110);
 PTED=Aux/10+0x30;
 dato();	
 */
+
